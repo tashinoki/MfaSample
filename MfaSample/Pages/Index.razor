@@ -1,0 +1,36 @@
+﻿@page "/"
+@using MfaSample.Data
+@inject MultiFactorAuthenticationService MultiFactorAuthenticationService
+
+
+<div id="qrCodeData" data-url="@AuthenticatorUri"></div>
+
+@if(@IsVerified)
+{
+    <div>認証済み</div>
+}
+else
+{
+    <div>未認証</div>
+}
+
+<input type="text" @bind="@Code" />
+<button @onclick="@OnVerifyAsync">検証</button>
+
+@code {
+
+    private string AuthenticatorUri;
+    private string Code;
+    private bool IsVerified = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticatorUri = MultiFactorAuthenticationService.GetUri();
+    }
+
+    private void OnVerifyAsync()
+    {
+        var result = MultiFactorAuthenticationService.VerifyAsync(Code);
+        IsVerified = result;
+    }
+}
